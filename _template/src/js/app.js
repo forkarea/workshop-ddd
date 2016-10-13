@@ -2,6 +2,7 @@ import '../scss/global.scss';
 import alfrid, { GL } from 'alfrid';
 import AssetsLoader from 'assets-loader';
 import dat from 'dat-gui';
+import Stats from 'stats.js';
 
 import vs from '../shaders/raymarching.vert';
 import fs from '../shaders/raymarching.frag';
@@ -14,7 +15,7 @@ const params = {
 	fov:1
 };
 
-let shader, mesh, globalTime = Math.random() * 10000;
+let shader, mesh, globalTime = Math.random() * 10000, stats;
 let mouseX = 0;
 let mouseY = 0;
 
@@ -60,6 +61,8 @@ function _onImageLoaded(o) {
 }
 
 
+
+
 function _init3D() {
 	//	CREATE CANVAS
 	const canvas = document.createElement('canvas');
@@ -82,6 +85,10 @@ function _init3D() {
 
 	//	LOOP RENDERING
 	alfrid.Scheduler.addEF(() => loop());
+
+	//	STATS
+	stats = new Stats();
+	document.body.appendChild(stats.domElement);
 }
 
 
@@ -95,6 +102,8 @@ function loop() {
 	shader.uniform("uAspectRatio", "float", GL.aspectRatio);
 	shader.uniform("uFOV", "float", params.fov);
 	GL.draw(mesh);
+
+	stats.update();
 }
 
 function resize() {
