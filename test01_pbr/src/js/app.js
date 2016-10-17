@@ -13,7 +13,7 @@ const getAsset = function(id) {
 
 window.params = {
 	roughness:1,
-	specular:0,
+	specular:1,
 	metallic:0,
 	gamma:2.2,
 	exposure:5,

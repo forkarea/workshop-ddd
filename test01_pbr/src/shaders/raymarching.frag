@@ -2,7 +2,7 @@
 
 precision highp float;
 
-#define NUM_STEPS 128
+#define NUM_STEPS 128*2
 
 //	VARYING
 varying vec2 uv;

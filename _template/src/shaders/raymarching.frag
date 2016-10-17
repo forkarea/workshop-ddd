@@ -11,6 +11,17 @@ uniform vec2 uMouse;
 uniform float uFOV;
 
 
+//	OP
+float smin( float a, float b, float k ) {
+    float res = exp( -k*a ) + exp( -k*b );
+    return -log( res )/k;
+}
+
+float smin( float a, float b ) {
+    return smin(a, b, 7.0);
+}
+
+
 //	DISTANCE FIELD FUNCTIONS
 float plane(vec3 pos) {
 	return pos.y;
@@ -20,12 +31,13 @@ float sphere(vec3 pos, float radius) {
 	return length(pos) - radius;
 }
 
-
 //	MAPPING FUNCTION
 float map(vec3 pos) {
 	float dPlane = plane(pos);
-	float dSphere = sphere(pos, 4.0);
-	return min(dPlane, dSphere);
+	// float dSphere = sphere(pos, 4.0);
+	// return min(dPlane, dSphere);
+
+	return dPlane;
 }
 
 //	CALCULATE NORMAL
@@ -105,12 +117,12 @@ void main(void) {
 	}
 
 	if(hit) {
-		// color = fract(pos * 0.2);
-		vec3 N = computeNormal(pos);
-		vec3 L = normalize(vec3(1.0, 1.0, -1.0));
-		float shadow = softshadow(pos, L, 0.02, 2.5);
-		float _ao = ao(pos, N);
-		color = diffuse(N, L, vec3(1.0)) * shadow * _ao;
+		color = fract(pos * 0.2);
+		// vec3 N = computeNormal(pos);
+		// vec3 L = normalize(vec3(1.0, 1.0, -1.0));
+		// float shadow = softshadow(pos, L, 0.02, 2.5);
+		// float _ao = ao(pos, N);
+		// color = diffuse(N, L, vec3(1.0)) * shadow * _ao;
 	}
 
 	gl_FragColor = vec4(color, 1.0);

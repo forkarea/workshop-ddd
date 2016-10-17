@@ -12,10 +12,10 @@ const assets = [
 ];
 
 const params = {
-	fov:1
+	fov:1.5
 };
 
-let shader, mesh, globalTime = Math.random() * 10000, stats;
+let shader, mesh, globalTime = Math.random() * 10000, stats, orbControl;
 let mouseX = 0;
 let mouseY = 0;
 
@@ -61,8 +61,6 @@ function _onImageLoaded(o) {
 }
 
 
-
-
 function _init3D() {
 	//	CREATE CANVAS
 	const canvas = document.createElement('canvas');
@@ -85,6 +83,9 @@ function _init3D() {
 	//	LOOP RENDERING
 	alfrid.Scheduler.addEF(() => loop());
 
+	//	ORBITAL CONTROL
+	orbControl = new alfrid.OrbitalControl(null, window, 8);
+
 	//	STATS
 	stats = new Stats();
 	document.body.appendChild(stats.domElement);
@@ -93,6 +94,8 @@ function _init3D() {
 
 function loop() {
 	GL.clear(0, 0, 0, 0);
+
+	console.log(orbControl.radius.value);
 	globalTime += 0.01;
 
 	shader.bind();
@@ -100,6 +103,8 @@ function loop() {
 	shader.uniform("uMouse", "vec2", [mouseX, mouseY]);
 	shader.uniform("uAspectRatio", "float", GL.aspectRatio);
 	shader.uniform("uFOV", "float", params.fov);
+	shader.uniform("uAngles", "vec2", [orbControl.rx.value, orbControl.ry.value - Math.PI/2]);
+	shader.uniform("uRadius", "float", orbControl.radius.value);
 	GL.draw(mesh);
 
 	stats.update();
