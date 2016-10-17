@@ -94,8 +94,6 @@ function _init3D() {
 
 function loop() {
 	GL.clear(0, 0, 0, 0);
-
-	console.log(orbControl.radius.value);
 	globalTime += 0.01;
 
 	shader.bind();

@@ -1,6 +1,6 @@
 precision highp float;
 
-#define NUM_STEPS 128
+#define NUM_STEPS 64*2
 
 //	VARYING
 varying vec2 uv;
@@ -27,8 +27,8 @@ float sphere(vec3 pos, float radius) {
 
 //	MAPPING FUNCTION
 float map(vec3 pos) {
-	float dBox = box(pos, vec3(1.0));
-	float dSphere = sphere(pos-vec3(1.0, sin(uGlobalTime)*.5,-1.0), 1.0);
+	float dBox 		= box(pos, vec3(1.0));
+	float dSphere 	= sphere(pos-vec3(1.0, sin(uGlobalTime)*.5,-1.0), 1.0);
 	return min(dBox, dSphere);
 }
 
@@ -57,13 +57,9 @@ void main(void) {
 	for( int i = 0; i < NUM_STEPS; i++) {
 		float d = map(pos);
 
-		if(d > 20.0) {
-			break;
-		}
-
-		if(d < 0.01) {
+		if(d < 0.001) {
 			hit = true;
-			break;
+			// break;
 		}
 
 		pos += d * dir;
