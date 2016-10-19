@@ -21,6 +21,7 @@ window.params = {
 };
 
 const assets = [
+	{ id:'noise', url:'assets/img/noise.png'},
 	{ id:'radiance', url:'assets/img/studio_radiance.dds', type: 'binary' },
 	{ id:'irr_posx', url:'assets/img/irr_posx.hdr', type:'binary' },
 	{ id:'irr_posx', url:'assets/img/irr_posx.hdr', type:'binary' },
@@ -32,7 +33,7 @@ const assets = [
 ];
 
 let shader, mesh, globalTime = Math.random() * 10000, stats, orbControl;
-let textureIrr, textureRad;
+let textureIrr, textureRad, textureNoise;
 let mouseX = 0;
 let mouseY = 0;
 
@@ -111,6 +112,7 @@ function _init3D() {
 
 	textureIrr = new alfrid.GLCubeTexture([irr_posx, irr_negx, irr_posy, irr_negy, irr_posz, irr_negz]);
 	textureRad = alfrid.GLCubeTexture.parseDDS(getAsset('radiance'));
+	textureNoise = new alfrid.GLTexture(getAsset('noise'));
 
 
 	//	INIT MESH
@@ -137,10 +139,12 @@ function loop() {
 	globalTime += 0.01;
 
 	shader.bind();
-	shader.uniform('uRadianceMap', 'uniform1i', 0);
-	shader.uniform('uIrradianceMap', 'uniform1i', 1);
-	textureRad.bind(0);
-	textureIrr.bind(1);
+	shader.uniform("uTextureNoise", "uniform1i", 0);
+	textureNoise.bind(0);
+	shader.uniform('uRadianceMap', 'uniform1i', 1);
+	shader.uniform('uIrradianceMap', 'uniform1i', 2);
+	textureRad.bind(1);
+	textureIrr.bind(2);
 
 	const grey = 0.015;
 	shader.uniform('uBaseColor', 'uniform3fv', [grey, grey, grey]);

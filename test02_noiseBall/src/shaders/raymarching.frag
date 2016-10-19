@@ -16,6 +16,7 @@ uniform float uRadius;
 
 uniform samplerCube uRadianceMap;
 uniform samplerCube uIrradianceMap;
+uniform sampler2D 	uTextureNoise;
 
 uniform vec3		uBaseColor;
 uniform float		uRoughness;
@@ -180,16 +181,19 @@ vec3 getColor(vec3 pos, vec3 dir) {
 
 	vec3 N = computeNormal(pos);
 	vec3 L = normalize(vec3(1.0, 1.0, -1.0));
-	// float _ao = ao(pos, N);
+	float _ao = ao(pos, N);
 
 	float z 			= fract(pos.z + uGlobalTime * 0.1);
 
 	if(z < .5) {
 		color = getPbr(N, -dir, uBaseColor, uRoughness, uMetallic, uSpecular);
 	} else {
-		color = getPbr(N, -dir, COLOR_GOLD, 0.95, 0.85, 0.95);
+		vec3 noise = texture2D(uTextureNoise, uv * 4.0).rgb;
+		vec3 normal = normalize(N + noise);
+		color = getPbr(normal, -dir, COLOR_GOLD, 0.95, 0.85, 0.95);
 	}
 
+	color *= _ao;
 
 	// apply the tone-mapping
 	color				= Uncharted2Tonemap( color * uExposure );
