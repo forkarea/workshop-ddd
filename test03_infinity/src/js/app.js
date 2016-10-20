@@ -169,9 +169,11 @@ function loop() {
 
 
 function resize() {
-	GL.setSize(500, 500);
-	GL.canvas.style.width = '500px';
-	GL.canvas.style.height = '500px';
-	GL.canvas.style.left = `${(window.innerWidth - 500)/2}px`;
-	GL.canvas.style.top = `${(window.innerHeight - 500)/2}px`;
+	const width = window.innerWidth;
+	const height = window.innerHeight;
+	GL.setSize(width, height);
+	GL.canvas.style.width = `${width}px`;
+	GL.canvas.style.height = `${height}px`;
+	GL.canvas.style.left = `${(window.innerWidth - width)/2}px`;
+	GL.canvas.style.top = `${(window.innerHeight - height)/2}px`;
 }
