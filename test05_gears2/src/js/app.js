@@ -127,11 +127,11 @@ function _init3D() {
 	//	ORBITAL CONTROL
 	orbControl = new alfrid.OrbitalControl(null, window, 8);
 	orbControl.radius.limit(7, 20);
-	orbControl.radius.value = 15.0;
+	// orbControl.radius.value = 15.0;
 
 	//	STATS
 	stats = new Stats();
-	// document.body.appendChild(stats.domElement);
+	document.body.appendChild(stats.domElement);
 }
 
 

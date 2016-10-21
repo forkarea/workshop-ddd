@@ -46,18 +46,6 @@ vec2 rotate(vec2 pos, float angle) {
 	return mat2(c, s, -s, c) * pos;
 }
 
-float smin( float a, float b, float k )
-{
-    float res = exp( -k*a ) + exp( -k*b );
-    return -log( res )/k;
-}
-
-float smin( float a, float b )
-{
-    return smin(a, b, 7.0);
-}
-
-
 float combineChamfer(float d1, float d2, float r) {
 	float m = min(d1, d2);
 
@@ -73,19 +61,15 @@ float combineChamfer(float d1, float d2) {
 }
 
 //	DISTANCE FIELD FUNCTIONS
-float plane(vec3 pos) {
-	return pos.y;
-}
 
-//	GEOMETRY
 float sphere(vec3 pos, float radius) {
 	return length(pos) - radius;
 }
 
 float box( vec3 p, vec3 b ) {
-  vec3 d = abs(p) - b;
-  return min(max(d.x,max(d.y,d.z)),0.0) +
-         length(max(d,0.0));
+ 	vec3 d = abs(p) - b;
+ 	return min(max(d.x,max(d.y,d.z)),0.0) +
+		 length(max(d,0.0));
 }
 
 float box(vec3 p, float b) {
@@ -93,24 +77,16 @@ float box(vec3 p, float b) {
 }
 
 float cylinder( vec3 p, vec2 h ) {
-  vec2 d = abs(vec2(length(p.xz),p.y)) - h;
-  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+	vec2 d = abs(vec2(length(p.xz),p.y)) - h;
+	return min(max(d.x,d.y),0.0) + length(max(d,0.0));
 }
 
 vec2 repAng(vec2 p, float n) {
-    float ang = 2.0*PI/n;
-    float sector = floor(atan(p.x, p.y)/ang + 0.5);
-    p = rotate(p, sector*ang);
-    return p;
+	float ang = 2.0*PI/n;
+	float sector = floor(atan(p.x, p.y)/ang + 0.5);
+	p = rotate(p, sector*ang);
+	return p;
 }
-
-vec3 repAngS(vec2 p, float n) {
-    float ang = 2.0*PI/n;
-    float sector = floor(atan(p.x, p.y)/ang + 0.5);
-    p = rotate(p, sector*ang);
-    return vec3(p.x, p.y, mod(sector, n));
-}
-
 
 #define diskSize 2.0
 #define diskWidth .5
@@ -118,117 +94,15 @@ vec3 repAngS(vec2 p, float n) {
 #define ringSize 5.5
 #define numTeeth 12.0
 
-float gear1(vec3 pos) {
-	pos.xy = repAng(pos.xy, 4.0);
-	pos.y -= ringSize;
-
-	pos.xz = rotate(pos.xz, uGlobalTime);
-
-	float d = cylinder(pos, vec2(diskSize, diskWidth/2.0+0.05));
-	float cInner = cylinder(pos, vec2(diskSize - diskWidth, 5.0));
-	d = max(d, -cInner);
-
-	vec3 posBox = pos;
-	posBox.xz = repAng(posBox.xz, numTeeth);
-	posBox.z -= diskSize + diskWidth * .49;
-	
-	float dBox = box(posBox, boxSize);
-	d = combineChamfer(d, dBox);
-
-	return d;	
-}
-
-float gear2(vec3 pos) {
-	pos.xy = repAng(pos.xy, 4.0);
-	pos.y -= ringSize;
-
-	pos.xz = rotate(pos.xz, PI/numTeeth - uGlobalTime);
-
-	float d = cylinder(pos, vec2(diskSize, diskWidth/2.0+0.05));
-	float cInner = cylinder(pos, vec2(diskSize - diskWidth, 5.0));
-	d = max(d, -cInner);
-
-	vec3 posBox = pos;
-	posBox.xz = repAng(posBox.xz, numTeeth);
-	posBox.z -= diskSize + diskWidth * .49;
-	
-	float dBox = box(posBox, boxSize);
-	d = combineChamfer(d, dBox);
-
-	return d;	
-}
-
-#define innerScale .9
-
-float gear3(vec3 pos) {
-	pos = pos.xzy;
-	pos.xz = rotate(pos.xz, PI * .125);
-	pos.xz = repAng(pos.xz, 4.0);
-	pos.z -= ringSize;
-	pos.xz = rotate(pos.xz, uGlobalTime);
-	float d = cylinder(pos, vec2(diskSize*innerScale, diskWidth/2.0+0.05));
-	float cInner = cylinder(pos, vec2(diskSize*innerScale - diskWidth, 5.0));
-	d = max(d, -cInner);
-
-	vec3 posBox = pos;
-	posBox.xz = repAng(posBox.xz, numTeeth);
-	posBox.z -= diskSize*innerScale + diskWidth * .49;
-	
-	float dBox = box(posBox, boxSize);
-	d = combineChamfer(d, dBox);
-
-	return d;
-}
-
-
-float gear4(vec3 pos) {
-	pos = pos.xzy;
-	pos.xz = rotate(pos.xz, PI * .125 + PI * .25);
-	pos.xz = repAng(pos.xz, 4.0);
-	pos.z -= ringSize;
-	pos.xz = rotate(pos.xz, PI / numTeeth - uGlobalTime);
-	float d = cylinder(pos, vec2(diskSize*innerScale, diskWidth/2.0+0.05));
-	float cInner = cylinder(pos, vec2(diskSize*innerScale - diskWidth, 5.0));
-	d = max(d, -cInner);
-
-	vec3 posBox = pos;
-	posBox.xz = repAng(posBox.xz, numTeeth);
-	posBox.z -= diskSize*innerScale + diskWidth * .49;
-	
-	float dBox = box(posBox, boxSize);
-	d = combineChamfer(d, dBox);
-
-	return d;
-}
-
-
 //	MAPPING FUNCTION
 vec2 map(vec3 pos) {
 	float colorIndex = 1.0;
-	float dCenter = sphere(pos, 2.42);
-	float dGear1 = gear1(pos);
+	float d = sphere(pos, 1.0);
 
-	vec3 pos2 = pos;
-	pos2.xy = rotate(pos2.xy, PI * 0.25);
-	float dGear2 = gear2(pos2);
-
-	float dGear3 = gear3(pos);
-	float dGear4 = gear4(pos);
-	
-	float d = min(dGear1, dGear2);
-	d = min(d, dGear3);
-	d = min(d, dGear4);
-
-	if(d == dGear1) {
-		colorIndex = 0.0;
-	} else if(d == dGear2) {
-		colorIndex = 1.0;
-	} else if(d == dGear3) {
-		colorIndex = 0.0;
-	} else {
-		colorIndex = 1.0;
-	}
-
+	float c = cylinder(pos, vec2(diskSize, diskWidth/2.0));
+	float cInner = cylinder(pos, vec2(diskSize-diskWidth, diskWidth * 2.0));
+	c = max(c, -cInner);
+	d = min(d, c);
 
 	return vec2(d, colorIndex);
 }
@@ -243,16 +117,6 @@ vec3 computeNormal(vec3 pos) {
 		map(pos + eps.yyx).x - map(pos - eps.yyx).x
 	);
 	return normalize(normal);
-}
-
-//	DIFFUSE LIGHTING
-float diffuse(vec3 N, vec3 L) {
-	return max(dot(N, normalize(L)), 0.0);
-}
-
-
-vec3 diffuse(vec3 N, vec3 L, vec3 C) {
-	return diffuse(N, L) * C;
 }
 
 //	AMBIENT OCCULUSION
@@ -271,9 +135,7 @@ float ao( in vec3 pos, in vec3 nor ){
 }
 
 
-vec3 Uncharted2Tonemap( vec3 x ) {
-	return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;
-}
+vec3 Uncharted2Tonemap( vec3 x ) {	return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F))-E/F;	}
 
 // https://www.unrealengine.com/blog/physically-based-shading-on-mobile
 vec3 EnvBRDFApprox( vec3 SpecularColor, float Roughness, float NoV ) {
@@ -296,9 +158,7 @@ vec3 fix_cube_lookup( vec3 v, float cube_size, float lod ) {
 	return v;
 }
 
-vec3 correctGamma(vec3 color, float g) {
-	return pow(color, vec3(1.0/g));
-}
+vec3 correctGamma(vec3 color, float g) {	return pow(color, vec3(1.0/g));	}
 
 vec3 getPbr(vec3 N, vec3 V, vec3 baseColor, float roughness, float metallic, float specular) {
 	vec3 diffuseColor	= baseColor - baseColor * metallic;
@@ -320,8 +180,8 @@ vec3 getPbr(vec3 N, vec3 V, vec3 baseColor, float roughness, float metallic, flo
 	vec3 reflectance	= EnvBRDFApprox( specularColor, roughness4, NoV );
 	
 	// combine the specular IBL and the BRDF
-    vec3 diffuse  		= diffuseColor * irradiance;
-    vec3 _specular 		= radiance * reflectance;
+	vec3 diffuse  		= diffuseColor * irradiance;
+	vec3 _specular 		= radiance * reflectance;
 	color				= diffuse + _specular;
 
 	return color;
@@ -331,15 +191,6 @@ vec3 getPbr(vec3 N, vec3 V, vec3 baseColor, float roughness, float metallic, flo
 //	COLORING FUNCTION
 #define COLOR_FOG vec3(.0, .0, .0)
 #define COLOR_GOLD vec3(1.000, 0.766, 0.276)
-
-vec3 applyFog( in vec3  rgb,       // original color of the pixel
-               in float distance ) // camera to point distance
-{
-	float b = 0.2;
-    float fogAmount = 1.0 - exp( -distance*b );
-    vec3  fogColor  = vec3(0.5,0.6,0.7);
-    return mix( rgb, COLOR_FOG, fogAmount );
-}
 
 vec3 getColor(vec3 pos, vec3 dir, float colorIndex) {
 	vec3 color;
@@ -357,8 +208,6 @@ vec3 getColor(vec3 pos, vec3 dir, float colorIndex) {
 
 	color *= _ao;
 
-
-	color = applyFog(color, length(pos));
 
 	// apply the tone-mapping
 	color				= Uncharted2Tonemap( color * uExposure );
@@ -379,7 +228,7 @@ mat3 setCamera( in vec3 ro, in vec3 ta, float cr ) {
 	vec3 cp = vec3(sin(cr), cos(cr),0.0);
 	vec3 cu = normalize( cross(cw,cp) );
 	vec3 cv = normalize( cross(cu,cw) );
-    return mat3( cu, cv, cw );
+	return mat3( cu, cv, cw );
 }
 
 void main(void) {
@@ -390,7 +239,7 @@ void main(void) {
 	mat3 ca  = setCamera( pos, ta, 0.0 );
 	vec3 dir = ca * normalize( vec3(uv, uFOV) );
 
-	vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 	bool hit = false;
 	float colorIndex = 0.0;
 
