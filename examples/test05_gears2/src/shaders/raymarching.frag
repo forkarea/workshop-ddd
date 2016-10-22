@@ -67,8 +67,8 @@ float sphere(vec3 pos, float radius) {
 }
 
 float box( vec3 p, vec3 b ) {
- 	vec3 d = abs(p) - b;
- 	return min(max(d.x,max(d.y,d.z)),0.0) +
+	vec3 d = abs(p) - b;
+	return min(max(d.x,max(d.y,d.z)),0.0) +
 		 length(max(d,0.0));
 }
 
@@ -88,6 +88,19 @@ vec2 repAng(vec2 p, float n) {
 	return p;
 }
 
+vec3 repAngCustom(vec3 pos, float n) {
+	vec3 p = pos;
+	float ang = 2.0*PI/n;
+	float sector = floor(atan(p.x, p.y)/ang + 0.5);
+	
+	
+	// p.yz = rotate(p.yz, sector*0.3);
+	p.xy = rotate(p.xy, sector*ang);
+	// p.yz = rotate(p.yz, -sector*0.3);
+	
+	return vec3(p.x, p.y, p.z);
+}
+
 #define diskSize 2.0
 #define diskWidth .5
 #define boxSize .23
@@ -99,10 +112,18 @@ vec2 map(vec3 pos) {
 	float colorIndex = 1.0;
 	float d = sphere(pos, 1.0);
 
-	float c = cylinder(pos, vec2(diskSize, diskWidth/2.0));
-	float cInner = cylinder(pos, vec2(diskSize-diskWidth, diskWidth * 2.0));
+
+	vec3 newPos = pos;
+
+	newPos = repAngCustom(newPos, 8.0);
+	// newPos.yz = rotate(newPos.yz, PI/4.0);
+	newPos.y -= 5.0;
+
+	float c = cylinder(newPos, vec2(diskSize, diskWidth/2.0));
+	float cInner = cylinder(newPos, vec2(diskSize-diskWidth, diskWidth * 2.0));
 	c = max(c, -cInner);
 	d = min(d, c);
+	if(d == c) colorIndex = 0.0;
 
 	return vec2(d, colorIndex);
 }
