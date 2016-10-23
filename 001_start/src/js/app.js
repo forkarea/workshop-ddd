@@ -15,7 +15,7 @@ const params = {
 	fov:1
 };
 
-let shader, mesh, globalTime = Math.random() * 10000, stats;
+let shader, mesh, globalTime = Math.random() * 10000, stats, orbControl;
 let mouseX = 0;
 let mouseY = 0;
 
@@ -82,6 +82,10 @@ function _init3D() {
 	//	INIT shader
 	shader = new alfrid.GLShader(vs, fs);
 
+	//	Orbital Control
+	orbControl = new alfrid.OrbitalControl(null, window, 8);
+	orbControl.rx.value = .8;
+
 	//	LOOP RENDERING
 	alfrid.Scheduler.addEF(() => loop());
 
@@ -102,13 +106,15 @@ function loop() {
 	shader.uniform("uMouse", "vec2", [mouseX, mouseY]);
 	shader.uniform("uAspectRatio", "float", GL.aspectRatio);
 	shader.uniform("uFOV", "float", params.fov);
+	shader.uniform("uAngles", "vec2", [orbControl.rx.value, orbControl.ry.value - Math.PI/2]);
+	shader.uniform("uRadius", "float", orbControl.radius.value);
 	GL.draw(mesh);
 
 	stats.update();
 }
 
 function resize() {
-	const width = Math.min(window.innerWidth, window.innerHeight);
+	const width = Math.min(window.innerWidth, window.innerHeight, 500);
 	const height = width;
 
 	GL.canvas.style.width = `${width}px`;
