@@ -92,7 +92,7 @@ function _init3D() {
 
 	//	INIT DAT-GUI
 	window.gui = new dat.GUI({ width:300 });
-	// gui.add(params, 'fov', 0.01, 2.0);
+	gui.add(params, 'fov', 0.01, 2.0);
 
 	// gui.add(params, 'roughness', 0, 1);
 	// gui.add(params, 'specular', 0, 1);
