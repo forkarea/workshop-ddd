@@ -1,13 +1,20 @@
 # Useful Ray marching Links
 
-## Code
+## Codes
+Distance Field Functions 
+http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
+
+hg_sdf
+http://mercury.sexy/hg_sdf/
 
 
-## Presentation
+
+
+## Presentations
 WebGL Paris ( in French )
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=s6t0mJsgUKw" target="_blank"><img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+https://www.youtube.com/watch?v=s6t0mJsgUKw
 
 
 NVScene 2015 Session
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=s8nFqwOho-s" target="_blank"><img src="http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg" alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+https://www.youtube.com/watch?v=s8nFqwOho-s
 
